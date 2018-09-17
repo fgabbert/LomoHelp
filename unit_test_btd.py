@@ -1,9 +1,6 @@
 # Let's try to make Lomo's life easier.
 # FKG - fischergabbert@yahoo.com
 
-# TODO
-# Ping test URL and return fail if invalid
-
 import os
 import csv
 import json
@@ -17,52 +14,24 @@ from pathlib import Path
 from urllib.request import urlopen
 #_________________________________________________________________________________________________________________________________________________#
 
-
-# Set up Lomo's Clients. The name in here should be what proceeds '.com' in their website.
-Clients = ['valderramaortho',
-            '321boat',
-            'moongolf',
-            'artistictouchdentistry',
-            'agencybrokerageconsultants',
-            'francelawfirm',
-            'hallmarknameplate',
-            'hancockvillagedental',
-            'melbournecarstereo',
-            'lawlercentre',
-            'lentein',
-            'mhwilliams',
-            'ibrushteeth',
-            'kidspv',
-            'melbourneorthodontics',
-            'sedarosoralsurgery',
-            'smilesbyshields',
-            'stricklandorthodontics',
-            'sunriseoralsurgery',
-            'ussiglobal',
-            'verovipdental',
-            'vierabuilders',
-            'vierafertility',
-            #'yardleylaw.com',
-            'emergencyexpertforyou'];
-
-
+import LomoClients
+Clients = LomoClients.Clients
 
 #_________________________________________________________________________________________________________________________________________________#
-#Clients = ['valderramaortho'];
-justBuildMasters = 1
+justBuildMasters = 0
 # Loop through the clients and build spreadsheets
 for client in Clients:
-    url_link="http://"+ client +".com/wp-json/wp/v2/posts/"
+    url_link="http://"+ client['Name']+client['Ext']+"/wp-json/wp/v2/posts/"
     request = requests.get(url_link)
     if request.status_code != 200:
-        print('Couldnt get to blog posts! Skipping '+ client)
+        print('Couldnt get to blog posts! Skipping '+ client['Name'])
         continue
-    graph = facebook.GraphAPI(access_token="EAAeQsZBPlcmIBAHj53864v7ywYqpiDyMw5NDpbuQM39dR6fxhJ8J7EBA2LVeV3k9beVa5nMnr0F7ltSVZCCpCSysXt16O2SGCZBSnce3HTGhWVLa3LAHCfXiNfPfce5fod3WEjZBybeYlUzcYXlm0Q0eSGgHq0mhpQgrgLJkIJNm3lwNKBC3q7gTaw9PoLr4ezJqyATHawZDZD", version="2.12")
+    graph = facebook.GraphAPI(access_token="EAAGyZBb0Wu50BAP5U7X7D0qndoRZALbtcZA9cZA0UuHxW0eYiLUshm5hKF7PVLDsKoeTXqEqUqsxIsMUUqp6Rv5SSUmycBkbuuRLXQybThZCVvM3UIGrqeh9eCEO9sZC5oCc8UoLvmfZAQnHP11Gr2YxJyxaeKS7Cak2SnAHgzSegZDZD", version="2.12")
 
     # Load Master Blog spreadsheet
-    masterfile = Path(client + "_master.csv")
+    masterfile = Path(client['Name'] + "_master.csv")
     if masterfile.is_file() == 0:
-        print('No Master File Found! \n Creating Master CSV for '+client)
+        print('No Master File Found! \nCreating Master CSV for '+client['Name'])
         with open(masterfile, 'w', newline='') as csvfile:
             spamwriter = csv.writer(csvfile, delimiter=' ',
                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -84,13 +53,13 @@ for client in Clients:
 
 
     # Now read in all of the blog posts off of the website and look for new posts. Added ping test
-    url_link="http://"+ client +".com/wp-json/wp/v2/posts/"
-    print('Checking ' + client + ' for new blog posts...')
+    url_link="http://"+ client['Name'] +client['Ext']+"/wp-json/wp/v2/posts/"
+    print('Checking ' + client['Name'] + ' for new blog posts...')
 
     # Write the blog posts to a temporary text file until I make this more elegant
     with urlopen(url_link) as url:
         data = url.read()
-    filename = client + "_posts_temp .txt"
+    filename = client['Name'] + "_posts_temp .txt"
     file_ = open(filename, 'wb')
     file_.write(data)
     file_.close()
@@ -137,7 +106,7 @@ for client in Clients:
             print('New Post Found: ' + newpost["Title"])
             unmatched_posts.append(newpost)
     if len(unmatched_posts) == 0:
-        print('No new blog posts for ' +client+ ', Lomo!')
+        print('No new blog posts for ' +client['Name']+ ', Lomo!')
 
     # Append any new posts to the master stylesheet
     for post in unmatched_posts:
