@@ -26,7 +26,7 @@ for client in Clients:
     if request.status_code != 200:
         print('Couldnt get to blog posts! Skipping '+ client['Name'])
         continue
-    graph = facebook.GraphAPI(access_token="EAAGyZBb0Wu50BAP5U7X7D0qndoRZALbtcZA9cZA0UuHxW0eYiLUshm5hKF7PVLDsKoeTXqEqUqsxIsMUUqp6Rv5SSUmycBkbuuRLXQybThZCVvM3UIGrqeh9eCEO9sZC5oCc8UoLvmfZAQnHP11Gr2YxJyxaeKS7Cak2SnAHgzSegZDZD", version="2.12")
+    graph = facebook.GraphAPI(access_token="key", version="2.12")
 
     # Load Master Blog spreadsheet
     masterfile = Path(client['Name'] + "_master.csv")
@@ -122,7 +122,7 @@ for client in Clients:
             txtstatus = open(statusfile,'r')
             statustext = txtstatus.read()
             graph.put_object(
-                parent_object=277429155607359,
+                parent_object='key',
                 connection_name="feed",
                 message=statustext,
                 link=post["Link"])
